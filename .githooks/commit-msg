@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# 커밋 메시지 검사
+exec "$(git rev-parse --show-toplevel)/scripts/check-public.sh" --msg "$1"

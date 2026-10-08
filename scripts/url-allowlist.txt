@@ -1,0 +1,6 @@
+console.firebase.google.com
+play.google.com
+appstoreconnect.apple.com
+developer.apple.com
+cdn.jsdelivr.net
+www.w3.org

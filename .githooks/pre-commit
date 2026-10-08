@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# 커밋 전 스테이징 변경 검사
+exec "$(git rev-parse --show-toplevel)/scripts/check-public.sh" --staged

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# push 대상 커밋 전체 검사
+ROOT=$(git rev-parse --show-toplevel)
+[[ "$(git config core.hooksPath)" == ".githooks" ]] || { echo "✖ core.hooksPath 가 .githooks 가 아님" >&2; exit 1; }
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [[ "$local_sha" =~ ^0+$ ]] && continue
+  "$ROOT/scripts/check-public.sh" --range "$remote_sha" "$local_sha" || exit 1
+done

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Info 영역 확대</title>
+  <link href="https://cdn.jsdelivr.net/npm/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Spoqa Han Sans Neo', 'Apple SD Gothic Neo', sans-serif;
+      background: #F4F5F7;
+      color: #404351;
+      letter-spacing: -0.2px;
+      padding: 48px;
+    }
+
+    .wrap {
+      max-width: 900px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+
+    /* 섹션 타이틀 바 */
+    .section-bar {
+      background: #F8F9FA;
+      border-bottom: 1px solid #EBECED;
+      padding: 18px 32px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #858794;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    /* Info 전체 영역 */
+    .info-area {
+      padding: 28px 32px 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* 공통 Info 문구 */
+    .info-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      font-size: 14px;
+      color: #858794;
+      line-height: 22px;
+    }
+    .info-row::before {
+      content: '•';
+      flex-shrink: 0;
+      line-height: 22px;
+    }
+
+    /* 구분선 */
+    .divider {
+      height: 1px;
+      background: #EBECED;
+      margin: 8px 0;
+    }
+
+    /* 섹터 미제공 고지 블록 */
+    .notice-block {
+      background: #EDF6FF;
+      border: 1px solid #9FD1FF;
+      border-radius: 12px;
+      padding: 18px 20px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .notice-icon {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .notice-body {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .notice-lead {
+      font-size: 14px;
+      font-weight: 600;
+      color: #2A2C32;
+      line-height: 22px;
+    }
+    .notice-items {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .notice-item {
+      font-size: 14px;
+      color: #404351;
+      line-height: 22px;
+      padding-left: 4px;
+    }
+    .notice-item strong {
+      font-weight: 700;
+      color: #2A2C32;
+    }
+
+    /* NEW 뱃지 */
+    .new-badge {
+      display: inline-flex;
+      align-items: center;
+      background: #2E9BFF;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-left: 8px;
+      vertical-align: middle;
+      letter-spacing: 0.2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="section-bar">종목진단 › 업종(섹터) 탭 — 하단 Info 영역</div>
+    <div class="info-area">
+
+      <!-- 기존 공통 Info (유지) -->
+      <div class="info-row">자산 정보를 전달 받은 일시 기준 투자 종목 및 평가 금액이므로 실제 증권사와 상이할 수 있습니다.</div>
+      <div class="info-row">배당 수익/분배율은 최근 1년치 데이터를 활용하며 과거 데이터는 미래 수익을 보장하지 않습니다.</div>
+      <div class="info-row">마지막 제출 시점 2026-05-30 09:12</div>
+
+      <div class="divider"></div>
+
+      <!-- 신규 섹터 미제공 고지 -->
+      <div style="font-size:12px;font-weight:700;color:#2E9BFF;margin-bottom:2px">
+        섹터 미제공 상품 고지 <span class="new-badge">NEW</span>
+      </div>
+      <div class="notice-block">
+        <svg class="notice-icon" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="11" cy="11" r="10" stroke="#2E9BFF" stroke-width="1.6"/>
+          <path d="M11 10v5.5" stroke="#2E9BFF" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="11" cy="7" r="0.9" fill="#2E9BFF"/>
+        </svg>
+        <div class="notice-body">
+          <div class="notice-lead">일부 보유 상품은 아래 사유로 업종(섹터) 진단에서 제외될 수 있습니다.</div>
+          <div class="notice-items">
+            <div class="notice-item">• <strong>재간접·피더펀드</strong>: 모펀드 포트폴리오를 통해 간접 투자하는 구조로, 독립적인 섹터 정보가 제공되지 않습니다.</div>
+            <div class="notice-item">• <strong>MMF(머니마켓펀드)</strong>: 단기금융상품으로 섹터 분류가 적용되지 않습니다.</div>
+            <div class="notice-item">• <strong>사모펀드</strong>: 상품 특성상 섹터 정보를 공개하지 않는 경우가 있습니다.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>
