@@ -21,7 +21,8 @@ yj-archive/
 │   ├── CHECKLIST.md   # 작업 체크리스트
 │   ├── templates/     # SPEC.md / PLAN.md 템플릿
 │   └── 기능명/        # 기능별 SPEC.md / PLAN.md
-└── fa/                # 프로젝트별 작업 메모
+├── fa/                # 프로젝트별 작업 메모
+└── sqld/              # SQLD 자격증 기출 개념 정리
 ```
 
 ---
