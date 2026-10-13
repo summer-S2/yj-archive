@@ -1,5 +1,4 @@
 .DS_Store
 # 로컬 전용 (회사 고유 정보 포함 — 절대 커밋 금지)
-.public-guard-patterns
 CLAUDE.local.md
 app-web/CLAUDE.md

@@ -30,8 +30,36 @@ yj-archive/
 
 ```bash
 git config core.hooksPath .githooks
-cp scripts/public-guard-patterns.example .public-guard-patterns   # 로컬 금지어 목록 작성 (커밋되지 않음)
 ```
+
+---
+
+## 커밋·push 전 체크 사항
+
+### 자동 검사 (`scripts/check-public.sh` — 커밋·push 시 훅이 실행)
+
+- 로컬 절대경로 (`/Users/…`, `/home/…`)
+- 이슈·MR 번호 (`#<번호>`, 이슈·MR URL)
+- 브랜치명 (`feature/…`, `fix/…` 등)
+- 번들 ID·패키지명, 스토어 앱 ID, Firebase 앱 ID
+- 기기 UDID, IP 주소
+- 이메일, 전화번호, 주민번호
+- 키·토큰, 비밀번호·PIN·서명 정보
+- 허용 목록(`scripts/url-allowlist.txt`)에 없는 URL
+- 이미지 등 바이너리 파일 (직접 열어 본 뒤 `PUBLIC_GUARD_REVIEWED_BINARIES=1`로 통과)
+
+### 직접 확인 (자동 검사로 못 잡음 — 파일을 전부 읽고 확인)
+
+- 회사명·서비스명·앱 이름·제품명, 이름에 이들이 들어간 코드 식별자·파일 경로
+- 회사 레포·GitHub 조직·내부 프로젝트 이름
+- 제휴사·증권사·데이터 제공처·외부 업체명
+- 내부 코드 체계 (약관 코드, 상태 코드, 화면 ID 등)
+- 사람 이름
+- 사용 중인 보안 솔루션·분석 도구 구성
+- 실제 데이터 (고객·종목 보유 내역, 내부 집계 수치, 실제 포트폴리오 샘플)
+- 이미지·HTML 안의 위 항목
+
+대신 쓸 표현은 [CLAUDE.md](./CLAUDE.md)의 public 레포 규칙 표를 따른다.
 
 ---
 

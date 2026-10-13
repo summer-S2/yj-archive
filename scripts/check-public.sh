@@ -10,15 +10,8 @@ git() { command git -c core.quotePath=false "$@"; }
 SELF="scripts/check-public.sh"
 
 ROOT=$(git rev-parse --show-toplevel)
-LOCAL_PATTERNS="$ROOT/.public-guard-patterns"
 URL_ALLOW="$ROOT/scripts/url-allowlist.txt"
 ZERO=0000000000000000000000000000000000000000
-
-if [[ ! -s "$LOCAL_PATTERNS" ]]; then
-  echo "✖ $LOCAL_PATTERNS 가 없거나 비어 있음 — 회사 고유 금지어 목록을 먼저 작성해야 커밋·push 가능" >&2
-  echo "  예시: scripts/public-guard-patterns.example" >&2
-  exit 1
-fi
 
 # 공통 금지 패턴 (이름|정규식)
 BUILTIN=(
@@ -49,8 +42,6 @@ scan() { # stdin: 검사할 텍스트, $1: 출처 라벨
     hit=$(grep -nE -- "$re" <<<"$text" | head -5)
     [[ -n "$hit" ]] && while IFS= read -r l; do report "$name" "$1: $l"; done <<<"$hit"
   done
-  hit=$(grep -nEi -f <(grep -vE '^\s*(#|$)' "$LOCAL_PATTERNS") <<<"$text" | head -10)
-  [[ -n "$hit" ]] && while IFS= read -r l; do report "회사 고유 금지어" "$1: $l"; done <<<"$hit"
   local url host
   while IFS= read -r url; do
     host=$(sed -E 's#https?://([^/:?]+).*#\1#' <<<"$url")

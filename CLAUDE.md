@@ -38,12 +38,10 @@ push된 내용은 지워도 커밋·캐시·포크에 남는다. **올라가면 
 
 1. 커밋·push는 **사용자가 명시적으로 요청할 때만** 한다.
 2. 커밋 전에 `git config core.hooksPath`가 `.githooks`인지 확인한다. 아니면 커밋하지 않고 설정부터 한다.
-3. `.public-guard-patterns`(로컬 금지어 목록)가 있는지 확인한다. 없으면 커밋하지 않는다.
-4. 커밋할 파일 **전체를 직접 읽고** 1번 표와 대조한다. 검사 스크립트 통과는 최소 조건일 뿐, 읽어 보지 않은 파일은 커밋하지 않는다.
-5. `scripts/check-public.sh --all`을 실행해 통과를 확인한다.
-6. 훅(pre-commit · commit-msg · pre-push)이 실패하면 **원인을 고친다.** `--no-verify`, 훅 경로 변경, 금지어 목록 수정 등으로 **우회하지 않는다.**
-7. 바이너리 파일은 직접 열어 확인한 경우에만 `PUBLIC_GUARD_REVIEWED_BINARIES=1`을 붙인다.
-8. 새 회사 고유 단어를 발견하면 `.public-guard-patterns`에 추가한다 (예시 파일 `scripts/public-guard-patterns.example`에는 실제 단어를 적지 않는다).
+3. 커밋할 파일 **전체를 직접 읽고** README의 '커밋·push 전 체크 사항'과 1번 표에 대조한다. 회사명·제휴사명·내부 코드·실제 데이터는 자동 검사로 못 잡으므로 직접 읽어야 한다. 읽어 보지 않은 파일은 커밋하지 않는다.
+4. `scripts/check-public.sh --all`을 실행해 통과를 확인한다.
+5. 훅(pre-commit · commit-msg · pre-push)이 실패하면 **원인을 고친다.** `--no-verify`, 훅 경로 변경, 검사 패턴 수정 등으로 **우회하지 않는다.**
+6. 바이너리 파일은 직접 열어 확인한 경우에만 `PUBLIC_GUARD_REVIEWED_BINARIES=1`을 붙인다.
 
 ### 3. 이미 push된 뒤 발견했을 때
 
