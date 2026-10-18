@@ -17,6 +17,7 @@ yj-archive/
 ├── scripts/           # 공개 정보 검사 스크립트
 ├── mobile-release/    # React Native iOS/Android 빌드·배포 가이드
 ├── react-router/      # React Router 관련 정리
+├── frontend-deploy/   # 프론트 배포·도메인 연결 정리
 ├── app-web/           # 프로젝트별 작업 메모
 │   ├── CHECKLIST.md   # 작업 체크리스트
 │   ├── templates/     # SPEC.md / PLAN.md 템플릿
