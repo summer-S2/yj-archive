@@ -662,7 +662,7 @@
   - `TRUNC(123.456, 1)` → 123.4 (소수 첫째 자리까지 남김)
 - `TRUNC(n, -1)`: 일의 자리를 버린다. `TRUNC(123.4, -1)` → 120
 - `ROUND(12345.678, -2)` → **12300** (십의 자리에서 반올림). 12350이 아니다.
-- `ROUND(109, 1)` → 109. 정수에 소수 자리를 지정해도 그대로다.
+- `ROUND(109, 1)` → **109** (정수에 소수 자리를 지정해도 그대로다)
 - **`MOD(m, n)`**: 나머지. 결과 부호는 **m(나눠지는 수)**을 따른다. `MOD(10, -3)` → 1, `MOD(7, 3)` → 1
 - `SIGN(n)`: 양수 1, 0이면 0, 음수 -1 / `ABS(n)`: 절댓값 / `POWER(m, n)`: 거듭제곱 (`POWER(3,3)` → 27)
 - **나눗셈과 0·NULL**
@@ -749,13 +749,26 @@
 | SQL Server | `ISNULL(a, b)` (`ISNULL(NULL, 0)` → 0) |
 | MySQL | `IFNULL(a, b)`. Oracle에는 없음 |
 
+- **JavaScript로 보면** (SQL NULL ≈ JS `null`)
+
+| SQL | JavaScript |
+|-----|------------|
+| `NVL(a, b)` | `a ?? b` |
+| `COALESCE(a, b, c)` | `a ?? b ?? c` |
+| `NVL2(a, b, c)` | `a != null ? b : c` |
+| `NULLIF(a, b)` | `a === b ? null : a` |
+| `DECODE(x, v, r, d)` | `x === v ? r : d` |
+
+  - `??`처럼 **NULL일 때만** 바꾼다. 0이나 공백 문자(`' '`)는 그대로다. (falsy를 다 거르는 `||`와 다르다) `NVL(0, 100)` → 0
+  - 예외: Oracle은 `''`를 NULL로 보므로 `NVL('', 'X')` → `'X'`. JS `'' ?? 'X'`는 `''`다.
+  - JS `switch (null) { case null: }`는 일치하지만, SQL `CASE 칼럼 WHEN NULL`은 `=` 비교라 **절대 일치하지 않는다**. NULL끼리 같다고 보는 건 DECODE뿐이다.
 - `NULL(PRICE, 0)`이라는 함수는 없다.
 - **0으로 나누기 방지**: `값 / NULLIF(분모, 0)` → 분모가 0이면 NULL이 되어 오류가 나지 않는다.
 - NVL2는 **인자 3개가 필수**다.
 - `NVL(SAL, 100)`과 같은 건 **`NVL2(SAL, SAL, 100)`**이다. NVL2는 NOT NULL일 때 두 번째 인자라, `NVL2(SAL, 100, SAL)`은 **정반대로** 동작한다. (`NVL2(A, B, C)` = `CASE WHEN A IS NOT NULL THEN B ELSE C END`)
 - **NULLIF만 성격이 다르다.** NVL·COALESCE·NVL2는 NULL을 다른 값으로 **바꾸고**, NULLIF는 NULL을 **만든다**.
   - `CASE WHEN COL = 'X' THEN NULL ELSE COL END` = `NULLIF(COL, 'X')`
-  - `NULLIF(1, NULL)` → 1. `1 = NULL`은 UNKNOWN이라 "같지 않음"으로 보고 첫 값을 돌려준다.
+  - `NULLIF(1, NULL)` → **1** (`1 = NULL`은 UNKNOWN이라 "같지 않음"으로 보고 첫 값을 돌려준다)
   - 그래서 `COUNT(NULLIF(칼럼, NULL))` = `COUNT(칼럼)` (NULL 아닌 행 수)
 - 결과가 NULL인 것 모음: `NVL(NULL, NULL)`, `COALESCE(NULL, NULL)`, `NULLIF('A','A')`, `CASE WHEN 1=2 THEN 'Y' END`, `DECODE('A','B','C',NULL)`
 - 중첩 예
@@ -802,6 +815,8 @@
   - 예: `'ABC' || NULL || 'XYZ'` → `ABCXYZ`
 - Oracle `CONCAT`은 인자가 **2개**다. 셋 이상은 중첩한다. NULL은 빈 문자열처럼 취급한다. (`CONCAT(CONCAT(NULL, 'BC'), 'D')` → `'BCD'`)
 - 산술 연산(`+`, `*` 등)은 NULL이 끼면 결과가 NULL이 된다. 문자열 연결과 다르다.
+- **SQL Server의 `+` 연결은 NULL이 끼면 결과가 NULL**이다. (`'A' + NULL` → NULL) SQL Server `CONCAT`은 인자를 **여러 개** 받고 NULL을 빈 문자열로 취급한다.
+- JavaScript와 비교: Oracle `||`는 JS의 문자열 `+`에 해당한다. JS의 `||`(논리 OR)와는 다르다. SQL의 논리 OR는 `OR`라는 단어로 쓴다.
 
 #### WHERE 조건 · 연산자 우선순위 — 기출 15회 (2026 3 · 2025 3 · 2024 3 · 2023 3 · 2022 3)
 - 우선순위: **괄호** → 산술 → 비교 연산자 → `NOT` → **`AND`** → `OR`. 괄호가 가장 높고, AND가 OR보다 먼저 묶인다.
