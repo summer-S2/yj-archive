@@ -739,7 +739,7 @@
 | `COALESCE(a, b, …)` | 처음으로 NULL이 아닌 값 | `COALESCE('AB','CD',NULL)` → `'AB'` |
 | `NULLIF(a, b)` | a = b이면 NULL, 아니면 a | `NULLIF('A','A')` → NULL |
 | `DECODE(x, v, r, 기본값)` | x = v이면 r, 아니면 기본값 | `DECODE('AB','CD','EF',NULL)` → NULL |
-| `CASE x WHEN v THEN r END` | 일치하는 WHEN이 없고 ELSE도 없으면 NULL | `CASE 'AB' WHEN 'CD' THEN 'EF' END` → NULL |
+| `CASE x WHEN v THEN r END` | **ELSE를 생략하면 `ELSE NULL`과 같다.** 일치하는 WHEN이 없으면 NULL | `CASE 'AB' WHEN 'CD' THEN 'EF' END` → NULL |
 
 - **DBMS별 NVL**
 
@@ -824,17 +824,23 @@
   - 정답: `년='2014' AND 월 BETWEEN '11' AND '12' OR 년='2015' AND 월 BETWEEN '01' AND '03'`
   - 오답: `년 IN ('2014', '2015') AND (월 BETWEEN '11' AND '12' OR 월 BETWEEN '01' AND '03')` → 연도와 월을 따로 묶어 2014년 1\~3월, 2015년 11\~12월까지 섞여 들어간다.
 - 같은 원리의 다른 예: `V1='A' AND V2='T1' OR V2='T2'`는 `(V1='A' AND V2='T1') OR V2='T2'`로 해석된다. 그래서 V1이 'A'가 아닌 행도 섞인다.
-- **3값 논리(TRUE·FALSE·UNKNOWN)**
+- **3값 논리(TRUE·FALSE·UNKNOWN)**: SQL의 조건 결과는 참·거짓 두 가지가 아니라 **세 가지**다.
+  - **UNKNOWN**은 **NULL과 비교**할 때 나온다. (`1 = NULL`, `NULL = NULL`, `COL > NULL` 등) NULL은 "값을 모름"이라 비교 결과도 "모름"이다.
+  - JS에는 이런 값이 없다. JS `1 === null`은 그냥 `false`다.
+- **조건 결과 표**: UNKNOWN을 "TRUE일 수도 FALSE일 수도 있는 값"으로 생각하면 풀린다.
 
-| 식 | 결과 |
-|----|------|
-| `FALSE AND UNKNOWN` | **FALSE** |
-| `TRUE AND UNKNOWN` | UNKNOWN |
-| `TRUE OR UNKNOWN` | **TRUE** |
-| `FALSE OR UNKNOWN` | UNKNOWN |
-| `NOT UNKNOWN` | **UNKNOWN** |
+| 식 | 결과 | 이유 |
+|----|------|------|
+| `TRUE AND UNKNOWN` | UNKNOWN | UNKNOWN에 따라 결과가 바뀐다 |
+| `FALSE AND UNKNOWN` | **FALSE** | AND는 한쪽이 FALSE면 무조건 FALSE |
+| `TRUE OR UNKNOWN` | **TRUE** | OR는 한쪽이 TRUE면 무조건 TRUE |
+| `FALSE OR UNKNOWN` | UNKNOWN | UNKNOWN에 따라 결과가 바뀐다 |
+| `NOT UNKNOWN` | **UNKNOWN** | 모르는 값을 뒤집어도 모른다 |
 
-  - WHERE는 **TRUE인 행만** 통과시킨다. FALSE·UNKNOWN은 모두 탈락한다.
+  - JS 단락 평가와 같은 감각이다. `false && 무엇` → false, `true || 무엇` → true.
+  - WHERE는 **TRUE인 행만** 통과시킨다. FALSE·UNKNOWN은 모두 탈락한다. (HAVING, CASE WHEN, CHECK 제약의 판단도 같은 3값 논리를 쓴다. 단 CHECK는 UNKNOWN을 **통과**시킨다)
+  - 그래서 `WHERE COL = NULL`은 항상 0행이다. NULL을 찾을 때는 `IS NULL`을 쓴다.
+  - 예: `WHERE DEPTNO NOT IN (10, NULL)` = `DEPTNO <> 10 AND DEPTNO <> NULL`. 뒤쪽이 항상 UNKNOWN이라 전체가 FALSE 아니면 UNKNOWN → **0행**
   - 예: COL = 1, 2, 3, 4, NULL일 때 `NOT (COL <= 2)` → NULL 행은 `NOT UNKNOWN` = UNKNOWN이라 **제외**된다. 3, 4만 남는다.
   - 예: `NOT (V1='A' AND V2='T1')`에서 V1이 NULL이고 V2가 'T1'이 아니면 `UNKNOWN AND FALSE` = FALSE → NOT으로 **TRUE**가 되어 **포함**된다.
   - `WHERE 월급 >= 100000 OR 월급 < 100000`처럼 모든 값을 덮는 조건이어도 **월급이 NULL인 행은 빠진다**. 그래서 `COUNT(*)`(전체)와 결과가 다를 수 있다.
@@ -879,8 +885,13 @@
 - **`ESCAPE`**: `%`나 `_` 자체를 찾을 때 쓴다.
   - `LIKE '%@_%' ESCAPE '@'` → 밑줄 `_`이 **들어 있는** 값
   - `LIKE '%_%'`는 `_`가 와일드카드라 **한 글자 이상인 모든 값**이 나온다.
-  - `LIKE '%#_%'`처럼 **ESCAPE 지정이 없으면** `#`은 그냥 문자다.
-- **LIKE는 `=`와 다르다.** `명 = '%연구소'`는 `%연구소`라는 문자열 그대로만 찾는다. 와일드카드는 LIKE에서만 동작한다.
+  - `LIKE '%#_%'`처럼 **ESCAPE 지정이 없으면** `#`은 그냥 문자다. `_`는 여전히 와일드카드라 '`#` 뒤에 아무 글자가 1개 이상 오는 값'을 찾는다. 밑줄 검색이 아니다.
+  - JS 정규식의 `\`와 같은 역할이다. (`/\./` = 마침표 그 자체, `/./` = 아무 문자 1개)
+  - 탈출 문자는 **아무 문자 1글자**로 정한다. `@`, `#`, `\`, `!` 모두 된다. (`LIKE '%#%%' ESCAPE '#'` → `%` 문자가 들어 있는 값)
+  - 탈출 문자는 **바로 뒤 한 글자에만** 적용된다. `'%@_%'`에서 마지막 `%`는 여전히 와일드카드다.
+  - 탈출 문자 자체를 찾으려면 **두 번** 쓴다. `ESCAPE '@'`일 때 `@@` = `@` 문자
+  - Oracle은 탈출 문자 뒤에 `%`·`_`·탈출 문자 자신이 아닌 글자가 오면 **오류**다. (예: `'@A'`)
+- **LIKE는 `=`와 다르다.** `부서명 = '%연구소'`는 `%연구소`라는 문자열 그대로만 찾는다. (`부서명`은 칼럼 이름) `부서명 LIKE '%연구소'`라고 써야 '연구소'로 끝나는 값을 찾는다. 와일드카드는 LIKE에서만 동작한다.
 - `NOT LIKE`에서도 **NULL 행은 제외**된다. 비교 결과가 UNKNOWN이기 때문이다.
 - Oracle의 LIKE는 **대소문자를 구분**한다. `LIKE 'A%'`는 소문자 a로 시작하는 값을 찾지 않는다.
 - **SQL Server의 `[ ]`**: 괄호 안 문자 중 1글자
