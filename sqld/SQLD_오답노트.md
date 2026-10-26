@@ -71,3 +71,15 @@
   - 행별: `A↵A` → 3 − 2 + 1 = **2**, `B↵B↵B` → 5 − 3 + 1 = **3** → SUM = **5**
   - 바깥에 집계 함수(SUM·COUNT)가 있으면 **모든 행을 합친다**.
 - 관련: [문자열 함수](SQLD_개념정리.md#문자열-함수--기출-12회-2026-1--2025-2--2024-2--2023-4--2022-3)
+
+### 2과목 17번 · 단순 CASE · DECODE 문법
+- **묻는 것**: `CASE WHEN LOC = 'NEW YORK' THEN 'EAST' ELSE 'ETC' END`와 같은 결과를 내는 식
+- **내 답** ① `CASE WHEN LOC IS 'NEW YORK' THEN 'EAST' ELSE 'ETC' END` → **정답** ② `CASE LOC WHEN 'NEW YORK' THEN 'EAST' ELSE 'ETC' END`
+- **왜 틀렸나**: `IS`를 `=`처럼 쓸 수 있다고 생각했다.
+- **보기별**
+  - ① **문법 오류**. `IS`는 `IS NULL`·`IS NOT NULL`에만 쓴다.
+  - ② 정답. 단순 CASE(`CASE 칼럼 WHEN 값`)로 같은 비교를 한다.
+  - ③ **문법 오류**. CASE에 `DEFAULT`는 없다. 나머지는 `ELSE`다.
+  - ④ 문법은 정상이지만 **결과가 틀림**. `DECODE(LOC, 'EAST', 'NEW YORK', 'ETC')`는 LOC를 'EAST'와 비교한다. 맞는 순서는 `DECODE(LOC, 'NEW YORK', 'EAST', 'ETC')`
+- **기억할 것**: 값 비교는 `=`, `IS`는 NULL 판정 전용. DECODE는 (비교 대상, 비교값, 결과, …, 기본값) 순서
+- 관련: [CASE 평가 규칙 · ELSE](SQLD_개념정리.md#case-평가-규칙--else--기출-8회-2025-2--2024-2--2023-2--2022-2), [NULL 관련 함수](SQLD_개념정리.md#null-관련-함수--기출-15회-2026-3--2025-3--2024-3--2023-3--2022-3)
