@@ -2400,8 +2400,11 @@ WHEN NOT MATCHED THEN
 
 | 부여 방식 | 대상 | 중간 사용자 권한을 회수하면 |
 |-----------|------|---------------------------|
-| `WITH GRANT OPTION` | 객체 권한 | 제3자에게 준 권한도 **함께 회수** |
+| `WITH GRANT OPTION` | 객체 권한 | **Oracle**: 제3자에게 준 권한도 **항상 함께 회수** / **표준 SQL**: `CASCADE`를 붙였을 때만 함께 회수 (아래 참고) |
 | `WITH ADMIN OPTION` | 시스템 권한·롤 | 제3자 권한은 **유지** |
+
+- **DBMS 기준을 먼저 확인한다.** 문제에 `REVOKE … CASCADE`처럼 키워드가 **명시돼 있으면 표준 SQL 기준**으로 푼다. CASCADE가 없는 REVOKE는 중간 사용자 권한만 회수하고 제3자 권한은 남는다.
+  - 예: Lee → Kim(GRANT OPTION) → Park에게 SELECT·INSERT·DELETE 부여 후, `REVOKE DELETE ON R FROM Kim` → Park의 DELETE는 **남음** / `REVOKE INSERT ON R FROM Kim CASCADE` → Park의 INSERT도 **회수**
 
 - WITH GRANT OPTION으로 전파된 제3자 권한은 원 부여자가 **직접 회수할 수 없다.** 중간 사용자를 회수해야 연쇄로 사라진다.
 - **표준 SQL**의 `REVOKE` 옵션
