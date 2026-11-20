@@ -2,3 +2,6 @@
 # 로컬 전용 (회사 고유 정보 포함 — 절대 커밋 금지)
 CLAUDE.local.md
 app-web/CLAUDE.md
+
+# 스킬 로컬 설정 (노션 ID 등)
+skills/*/config.local.md
